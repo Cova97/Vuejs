@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('part_id')->constrained('parts')->onDelete('cascade');
             $table->unsignedInteger('stock')->default(0);
             $table->unsignedInteger('min_stock')->default(10);
+            $table->unique(['company_id', 'part_id']);
             $table->timestamps();
         });
     }
