@@ -1,0 +1,19 @@
+# Dependencias
+vendor/
+node_modules/
+
+# Variables de entorno y secretos
+.env
+.env.*
+!.env.example
+
+# Builds y caches
+dist/
+backend/public/build/
+backend/public/hot
+*.log
+
+# Sistema / editores
+.DS_Store
+Thumbs.db
+.idea/
