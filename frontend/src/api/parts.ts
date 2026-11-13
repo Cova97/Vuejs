@@ -30,12 +30,29 @@ async function request<T>(url: string, options: RequestInit = {}): Promise<T> {
   return res.status === 204 ? (undefined as T) : res.json()
 }
 
+// Laravel (con PartResource) envuelve las respuestas en { "data": ... }.
+// Este tipo describe esa "caja" y abajo sacamos lo que viene dentro con .data
+interface ApiResponse<T> {
+  data: T
+}
+
 export const partsApi = {
-  list: () => request<Part[]>('/api/parts'),
-  get: (id: number | string) => request<Part>(`/api/parts/${id}`),
-  create: (data: PartInput) =>
-    request<Part>('/api/parts', { method: 'POST', body: JSON.stringify(data) }),
-  update: (id: number | string, data: PartInput) =>
-    request<Part>(`/api/parts/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  list: async () => (await request<ApiResponse<Part[]>>('/api/parts')).data,
+  get: async (id: number | string) =>
+    (await request<ApiResponse<Part>>(`/api/parts/${id}`)).data,
+  create: async (data: PartInput) =>
+    (
+      await request<ApiResponse<Part>>('/api/parts', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      })
+    ).data,
+  update: async (id: number | string, data: PartInput) =>
+    (
+      await request<ApiResponse<Part>>(`/api/parts/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      })
+    ).data,
   remove: (id: number | string) => request<void>(`/api/parts/${id}`, { method: 'DELETE' }),
 }

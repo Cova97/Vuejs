@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Part;
-use Illuminate\Http\Request;
 use App\Http\Requests\StorePartRequest;
 use App\Http\Requests\UpdatePartRequest;
+use App\Http\Resources\PartResource;
+use App\Models\Part;
 
 class PartController extends Controller
 {
@@ -14,7 +14,7 @@ class PartController extends Controller
      */
     public function index()
     {
-        return Part::orderBy('name')->get();
+        return PartResource::collection(Part::orderBy('name')->get());
     }
 
     /**
@@ -24,7 +24,8 @@ class PartController extends Controller
     {
         $part = Part::create($request->validated());
 
-        return response()->json($part, 201);
+        // Laravel detecta que la pieza es nueva y responde con 201 (Created).
+        return new PartResource($part);
     }
 
     /**
@@ -32,7 +33,7 @@ class PartController extends Controller
      */
     public function show(Part $part)
     {
-        return $part;
+        return new PartResource($part);
     }
 
     /**
@@ -42,7 +43,7 @@ class PartController extends Controller
     {
         $part->update($request->validated());
 
-        return $part;
+        return new PartResource($part);
     }
 
     /**
