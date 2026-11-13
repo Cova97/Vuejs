@@ -1,55 +1,49 @@
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
+import { partsApi, ValidationError } from '@/api/parts'
+import type { Part, PartInput, ValidationErrors } from '@/types/part'
 
-const emit = defineEmits<{ created: [] }>()
+// Si recibe una pieza, el formulario está en modo "editar"; si no, en modo "crear".
+const props = defineProps<{ part?: Part }>()
+const emit = defineEmits<{ saved: [part: Part] }>()
 
-const form = reactive({
-  sku: '',
-  name: '',
-  description: '',
-  quantity: 0,
-  price: 0,
-  active: true,
-})
+const isEdit = !!props.part
 
-const errors = ref<Record<string, string[]>>({})
-const saving = ref(false)
-
-function reset() {
-  form.sku = ''
-  form.name = ''
-  form.description = ''
-  form.quantity = 0
-  form.price = 0
-  form.active = true
+function emptyForm(): PartInput {
+  return { sku: '', name: '', description: '', quantity: 0, price: 0, active: true }
 }
+
+function fromPart(part: Part): PartInput {
+  return {
+    sku: part.sku,
+    name: part.name,
+    description: part.description ?? '',
+    quantity: part.quantity,
+    price: Number(part.price),
+    active: part.active,
+  }
+}
+
+const form = reactive<PartInput>(props.part ? fromPart(props.part) : emptyForm())
+const errors = ref<ValidationErrors>({})
+const saving = ref(false)
+const error = ref<string | null>(null)
 
 async function submit() {
   saving.value = true
   errors.value = {}
+  error.value = null
 
   try {
-    const res = await fetch('/api/parts', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-      body: JSON.stringify(form),
-    })
+    const saved = props.part
+      ? await partsApi.update(props.part.id, form)
+      : await partsApi.create(form)
 
-    if (res.status === 422) {
-      const data = await res.json()
-      errors.value = data.errors
-      return
-    }
-
-    if (!res.ok) throw new Error(`HTTP ${res.status}`)
-
-    reset()
-    emit('created')
+    if (!isEdit) Object.assign(form, emptyForm())
+    emit('saved', saved)
   } catch (e) {
-    alert(e)
+    if (e instanceof ValidationError) errors.value = e.errors
+    else error.value = String(e)
   } finally {
     saving.value = false
   }
@@ -57,36 +51,36 @@ async function submit() {
 </script>
 
 <template>
-  <form @submit.prevent="submit" style="margin-bottom: 2rem">
-    <h2>Nueva pieza</h2>
+  <form @submit.prevent="submit">
+    <h2>{{ isEdit ? 'Editar pieza' : 'Nueva pieza' }}</h2>
 
     <div>
-      <label>SKU</label>
-      <input v-model="form.sku" />
+      <label for="sku">SKU</label>
+      <input id="sku" v-model="form.sku" />
       <small v-if="errors.sku">{{ errors.sku[0] }}</small>
     </div>
 
     <div>
-      <label>Nombre</label>
-      <input v-model="form.name" />
+      <label for="name">Nombre</label>
+      <input id="name" v-model="form.name" />
       <small v-if="errors.name">{{ errors.name[0] }}</small>
     </div>
 
     <div>
-      <label>Descripción</label>
-      <textarea v-model="form.description"></textarea>
+      <label for="description">Descripción</label>
+      <textarea id="description" v-model="form.description"></textarea>
       <small v-if="errors.description">{{ errors.description[0] }}</small>
     </div>
 
     <div>
-      <label>Cantidad</label>
-      <input type="number" v-model.number="form.quantity" />
+      <label for="quantity">Cantidad</label>
+      <input id="quantity" type="number" v-model.number="form.quantity" />
       <small v-if="errors.quantity">{{ errors.quantity[0] }}</small>
     </div>
 
     <div>
-      <label>Precio</label>
-      <input type="number" step="0.01" v-model.number="form.price" />
+      <label for="price">Precio</label>
+      <input id="price" type="number" step="0.01" v-model.number="form.price" />
       <small v-if="errors.price">{{ errors.price[0] }}</small>
     </div>
 
@@ -97,13 +91,20 @@ async function submit() {
       </label>
     </div>
 
+    <small v-if="error">{{ error }}</small>
+
     <button type="submit" :disabled="saving">
-      {{ saving ? 'Guardando...' : 'Guardar' }}
+      {{ saving ? 'Guardando...' : isEdit ? 'Actualizar' : 'Guardar' }}
     </button>
+    <!-- El slot permite que quien use el formulario agregue botones extra (como "Cancelar"). -->
+    <slot />
   </form>
 </template>
 
 <style scoped>
+form {
+  margin-bottom: 2rem;
+}
 div {
   margin-bottom: 0.75rem;
 }
@@ -114,5 +115,8 @@ label {
 small {
   color: crimson;
   display: block;
+}
+button {
+  margin-right: 0.75rem;
 }
 </style>

@@ -1,15 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-
-interface Part {
-  id: number
-  sku: string
-  name: string
-  description: string | null
-  quantity: number
-  price: string
-  active: boolean
-}
+import { partsApi } from '@/api/parts'
+import type { Part } from '@/types/part'
 
 const parts = ref<Part[]>([])
 const loading = ref(true)
@@ -20,11 +12,7 @@ async function load() {
   loading.value = true
   error.value = null
   try {
-    const res = await fetch('/api/parts', {
-      headers: { Accept: 'application/json' },
-    })
-    if (!res.ok) throw new Error(`HTTP ${res.status}`)
-    parts.value = await res.json()
+    parts.value = await partsApi.list()
   } catch (e) {
     error.value = String(e)
   } finally {
@@ -37,11 +25,7 @@ async function remove(part: Part) {
 
   deleting.value = part.id
   try {
-    const res = await fetch(`/api/parts/${part.id}`, {
-      method: 'DELETE',
-      headers: { Accept: 'application/json' },
-    })
-    if (!res.ok) throw new Error(`HTTP ${res.status}`)
+    await partsApi.remove(part.id)
 
     parts.value = parts.value.filter((p) => p.id !== part.id)
   } catch (e) {
