@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreCompanyRequest;
+use App\Http\Requests\UpdateCompanyRequest;
 use App\Http\Resources\CompanyResource;
 use App\Models\Company;
 use App\Services\CompanyService;
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use App\Http\Requests\StoreCompanyRequest;
+use Illuminate\Http\Response;
 
 class CompanyController extends Controller
 {
@@ -45,16 +46,21 @@ class CompanyController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateCompanyRequest $request, Company $company): CompanyResource
     {
-        //
+        $company = $this->companies->update($company, $request->validated());
+
+        return new CompanyResource($company);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Company $company): Response
     {
-        //
+        $this->companies->delete($company);
+
+        // 204 No Content: "listo, lo borré" (sin cuerpo en la respuesta).
+        return response()->noContent();
     }
 }

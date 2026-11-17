@@ -29,4 +29,24 @@ class CompanyService
     {
         return Company::create($data);
     }
+
+    /**
+     * Actualiza una empresa y la devuelve.
+     *
+     * @param  array<string, mixed>  $data
+     */
+    public function update(Company $company, array $data): Company
+    {
+        $company->update($data);
+
+        return $company;
+    }
+
+    /**
+     * Borra una empresa (y por cascada, sus filas de stock en company_part).
+     */
+    public function delete(Company $company): void
+    {
+        $company->delete();
+    }
 }
