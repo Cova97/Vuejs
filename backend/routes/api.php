@@ -20,3 +20,7 @@ Route::get('/ping', function () {
 Route::apiResource('parts', PartController::class);
 
 Route::apiResource('companies', CompanyController::class);
+
+// Stock de una pieza dentro de una empresa ("en la empresa X, la pieza Y").
+Route::put('companies/{company}/parts/{part}', [CompanyController::class, 'updateStock']);
+Route::delete('companies/{company}/parts/{part}', [CompanyController::class, 'removePart']);

@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreCompanyRequest;
 use App\Http\Requests\UpdateCompanyRequest;
+use App\Http\Requests\UpdateStockRequest;
 use App\Http\Resources\CompanyResource;
 use App\Models\Company;
+use App\Models\Part;
 use App\Services\CompanyService;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
@@ -61,6 +63,28 @@ class CompanyController extends Controller
         $this->companies->delete($company);
 
         // 204 No Content: "listo, lo borré" (sin cuerpo en la respuesta).
+        return response()->noContent();
+    }
+
+    /**
+     * PUT /api/companies/{company}/parts/{part}
+     * Pone o cambia el stock de la pieza en la empresa.
+     */
+    public function updateStock(UpdateStockRequest $request, Company $company, Part $part): CompanyResource
+    {
+        $company = $this->companies->setStock($company, $part, $request->validated());
+
+        return new CompanyResource($company);
+    }
+
+    /**
+     * DELETE /api/companies/{company}/parts/{part}
+     * Quita la pieza de la empresa (la pieza sigue existiendo).
+     */
+    public function removePart(Company $company, Part $part): Response
+    {
+        $this->companies->removePart($company, $part);
+
         return response()->noContent();
     }
 }

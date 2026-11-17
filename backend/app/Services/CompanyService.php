@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Company;
+use App\Models\Part;
 use Illuminate\Database\Eloquent\Collection;
 
 class CompanyService
@@ -48,5 +49,26 @@ class CompanyService
     public function delete(Company $company): void
     {
         $company->delete();
+    }
+
+    /**
+     * Pone o cambia el stock de una pieza en una empresa.
+     * Si la pieza no estaba en la empresa, la agrega.
+     *
+     * @param  array<string, mixed>  $data  ['stock' => ..., 'min_stock' => ...]
+     */
+    public function setStock(Company $company, Part $part, array $data): Company
+    {
+        $company->parts()->syncWithoutDetaching([$part->id => $data]);
+
+        return $this->find($company);
+    }
+
+    /**
+     * Quita una pieza de una empresa (borra su fila en company_part).
+     */
+    public function removePart(Company $company, Part $part): void
+    {
+        $company->parts()->detach($part->id);
     }
 }
