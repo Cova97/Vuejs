@@ -12,7 +12,7 @@ class StoreCompanyRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,8 +22,11 @@ class StoreCompanyRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            //
+         return [
+            'name'    => ['required', 'string', 'max:255'],
+            'address' => ['nullable', 'string', 'max:255'],
+            'phone'   => ['nullable', 'string', 'max:30'],
+            'rfc'     => ['required', 'string', 'between:12,13', 'unique:companies,rfc'],
         ];
     }
 }

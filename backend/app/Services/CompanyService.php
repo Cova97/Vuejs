@@ -24,4 +24,9 @@ class CompanyService
     {
         return $company->load('parts');
     }
+
+    public function create(array $data): Company
+    {
+        return Company::create($data);
+    }
 }

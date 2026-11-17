@@ -7,6 +7,7 @@ use App\Models\Company;
 use App\Services\CompanyService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use App\Http\Requests\StoreCompanyRequest;
 
 class CompanyController extends Controller
 {
@@ -25,9 +26,11 @@ class CompanyController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreCompanyRequest $request): CompanyResource
     {
-        //
+        $company = $this->companies->create($request->validated());
+
+        return new CompanyResource($company);
     }
 
     /**
