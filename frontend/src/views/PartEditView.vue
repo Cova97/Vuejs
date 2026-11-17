@@ -26,15 +26,35 @@ onMounted(async () => {
 </script>
 
 <template>
-  <p v-if="loading">Cargando...</p>
+  <header class="page-header">
+    <div>
+      <RouterLink :to="{ name: 'parts' }" class="back-link">← Volver a piezas</RouterLink>
+      <h1>{{ part ? part.name : 'Editar pieza' }}</h1>
+      <p v-if="part" class="mono">{{ part.sku }}</p>
+    </div>
+  </header>
 
-  <p v-else-if="notFound">
-    Esa pieza no existe. <RouterLink to="/">Volver</RouterLink>
-  </p>
+  <div class="card">
+    <p v-if="loading" class="muted">Cargando...</p>
 
-  <p v-else-if="error">Error: {{ error }}</p>
+    <div v-else-if="notFound" class="empty-state">
+      Esa pieza no existe.
+      <p><RouterLink :to="{ name: 'parts' }">Volver a la lista</RouterLink></p>
+    </div>
 
-  <PartForm v-else-if="part" :part="part" @saved="router.push({ name: 'parts' })">
-    <RouterLink to="/">Cancelar</RouterLink>
-  </PartForm>
+    <div v-else-if="error" class="alert alert-danger">Error: {{ error }}</div>
+
+    <PartForm v-else-if="part" :part="part" @saved="router.push({ name: 'parts' })">
+      <RouterLink :to="{ name: 'parts' }" class="btn btn-secondary">Cancelar</RouterLink>
+    </PartForm>
+  </div>
 </template>
+
+<style scoped>
+.back-link {
+  display: inline-block;
+  margin-bottom: 0.5rem;
+  font-size: 0.85rem;
+  text-decoration: none;
+}
+</style>
