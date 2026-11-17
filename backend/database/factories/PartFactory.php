@@ -21,7 +21,6 @@ class PartFactory extends Factory
             'sku' => fake()->unique()->bothify('PZ-####-??'),
             'name' => ucfirst(fake()->words(2, true)),
             'description' => fake()->optional()->sentence(),
-            'quantity' => fake()->numberBetween(0, 500),
             'price' => fake()->randomFloat(2, 1, 2000),
             'active' => fake()->boolean(85),
         ];

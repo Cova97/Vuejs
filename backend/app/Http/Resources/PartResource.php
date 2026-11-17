@@ -25,7 +25,9 @@ class PartResource extends JsonResource
             'sku' => $this->sku,
             'name' => $this->name,
             'description' => $this->description,
-            'quantity' => $this->quantity,
+            // Total calculado: suma del stock en todas las empresas (ver PartService).
+            // Si la pieza no está en ninguna empresa, la suma llega como null: la mostramos como 0.
+            'quantity' => (int) ($this->quantity ?? 0),
             'price' => $this->price,
             'active' => $this->active,
             'created_at' => $this->created_at?->toIso8601String(),

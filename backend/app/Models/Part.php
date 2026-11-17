@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Part extends Model
 {
@@ -14,7 +15,6 @@ class Part extends Model
         'sku',
         'name',
         'description',
-        'quantity',
         'price',
         'active',
     ];
@@ -25,5 +25,12 @@ class Part extends Model
             'price' => 'decimal:2',
             'active' => 'boolean',
         ];
+    }
+
+    public function companies(): BelongsToMany
+    {
+        return $this->belongsToMany(Company::class)
+            ->withPivot('stock', 'min_stock')
+            ->withTimestamps();
     }
 }

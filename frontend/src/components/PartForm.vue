@@ -10,7 +10,7 @@ const emit = defineEmits<{ saved: [part: Part] }>()
 const isEdit = !!props.part
 
 function emptyForm(): PartInput {
-  return { sku: '', name: '', description: '', quantity: 0, price: 0, active: true }
+  return { sku: '', name: '', description: '', price: 0, active: true }
 }
 
 function fromPart(part: Part): PartInput {
@@ -18,7 +18,6 @@ function fromPart(part: Part): PartInput {
     sku: part.sku,
     name: part.name,
     description: part.description ?? '',
-    quantity: part.quantity,
     price: Number(part.price),
     active: part.active,
   }
@@ -70,12 +69,6 @@ async function submit() {
       <label for="description">Descripción</label>
       <textarea id="description" v-model="form.description"></textarea>
       <small v-if="errors.description">{{ errors.description[0] }}</small>
-    </div>
-
-    <div>
-      <label for="quantity">Cantidad</label>
-      <input id="quantity" type="number" v-model.number="form.quantity" />
-      <small v-if="errors.quantity">{{ errors.quantity[0] }}</small>
     </div>
 
     <div>

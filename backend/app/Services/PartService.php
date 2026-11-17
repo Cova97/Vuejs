@@ -21,7 +21,19 @@ class PartService
      */
     public function list(): Collection
     {
-        return Part::orderBy('name')->get();
+        // withSum agrega a cada pieza un campo "quantity" con la suma
+        // del stock que tiene en todas las empresas (tabla company_part).
+        return Part::withSum('companies as quantity', 'company_part.stock')
+            ->orderBy('name')
+            ->get();
+    }
+
+    /**
+     * Calcula el total (quantity) de una sola pieza ya cargada.
+     */
+    public function withQuantity(Part $part): Part
+    {
+        return $part->loadSum('companies as quantity', 'company_part.stock');
     }
 
     /**
@@ -31,7 +43,7 @@ class PartService
      */
     public function create(array $data): Part
     {
-        return Part::create($data);
+        return $this->withQuantity(Part::create($data));
     }
 
     /**
@@ -43,7 +55,7 @@ class PartService
     {
         $part->update($data);
 
-        return $part;
+        return $this->withQuantity($part);
     }
 
     /**

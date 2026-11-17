@@ -33,7 +33,6 @@ class UpdatePartRequest extends FormRequest
             ],
             'name'        => ['sometimes', 'required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
-            'quantity'    => ['sometimes', 'required', 'integer', 'min:0'],
             'price'       => ['sometimes', 'required', 'numeric', 'min:0'],
             'active'      => ['boolean'],
         ];

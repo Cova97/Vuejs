@@ -44,7 +44,7 @@ class PartController extends Controller
      */
     public function show(Part $part): PartResource
     {
-        return new PartResource($part);
+        return new PartResource($this->parts->withQuantity($part));
     }
 
     /**

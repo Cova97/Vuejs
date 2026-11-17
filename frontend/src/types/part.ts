@@ -4,7 +4,7 @@ export interface Part {
   sku: string
   name: string
   description: string | null
-  quantity: number
+  quantity: number // calculado por la API: suma del stock en todas las empresas
   price: string // Laravel envía los decimales como texto, por ejemplo "12.50"
   active: boolean
   created_at: string | null // fecha en formato ISO, ej. "2026-11-13T20:00:00+00:00"
@@ -16,7 +16,6 @@ export interface PartInput {
   sku: string
   name: string
   description: string
-  quantity: number
   price: number
   active: boolean
 }

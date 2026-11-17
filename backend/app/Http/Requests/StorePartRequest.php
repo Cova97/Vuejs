@@ -26,7 +26,6 @@ class StorePartRequest extends FormRequest
             'sku'         => ['required', 'string', 'max:50', 'unique:parts,sku'],
             'name'        => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
-            'quantity'    => ['required', 'integer', 'min:0'],
             'price'       => ['required', 'numeric', 'min:0'],
             'active'      => ['boolean'],
         ];
