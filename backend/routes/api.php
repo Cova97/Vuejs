@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PartController;
+use App\Http\Controllers\CompanyController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -17,3 +18,5 @@ Route::get('/ping', function () {
 });
 
 Route::apiResource('parts', PartController::class);
+
+Route::apiResource('companies', CompanyController::class);
